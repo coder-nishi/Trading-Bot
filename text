@@ -1,0 +1,117 @@
+
+## 3. utils.py
+```python
+import logging
+import json
+from datetime import datetime
+from colorama import Fore, Style, init
+
+# Initialize colorama for cross-platform colored output
+init(autoreset=True)
+
+class Logger:
+    def __init__(self, name='TradingBot'):
+        self.logger = logging.getLogger(name)
+        self.setup_logging()
+    
+    def setup_logging(self):
+        """Setup logging configuration"""
+        logging.basicConfig(
+            level=logging.INFO,
+            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+            handlers=[
+                logging.FileHandler('trading_bot.log'),
+                logging.StreamHandler()
+            ]
+        )
+    
+    def log_request(self, endpoint, params):
+        """Log API requests"""
+        self.logger.info(f"{Fore.CYAN}API Request: {endpoint}")
+        self.logger.info(f"{Fore.CYAN}Params: {params}")
+    
+    def log_response(self, response):
+        """Log API responses"""
+        self.logger.info(f"{Fore.GREEN}API Response: {response}")
+    
+    def log_error(self, error, context=""):
+        """Log errors with context"""
+        self.logger.error(f"{Fore.RED}Error in {context}: {error}")
+    
+    def log_order(self, order_type, symbol, side, quantity, price=None):
+        """Log order placement"""
+        price_info = f" at ${price}" if price else ""
+        self.logger.info(
+            f"{Fore.YELLOW}Placing {order_type} {side} order: "
+            f"{quantity} {symbol}{price_info}"
+        )
+
+class InputValidator:
+    @staticmethod
+    def validate_symbol(symbol):
+        """Validate trading symbol format"""
+        if not symbol or not isinstance(symbol, str):
+            return False, "Symbol must be a non-empty string"
+        
+        # Basic symbol validation (e.g., BTCUSDT, ETHUSDT)
+        if not symbol.endswith('USDT'):
+            return False, "Symbol must be a USDT pair (e.g., BTCUSDT)"
+        
+        return True, "Valid symbol"
+    
+    @staticmethod
+    def validate_quantity(quantity):
+        """Validate order quantity"""
+        try:
+            qty = float(quantity)
+            if qty <= 0:
+                return False, "Quantity must be positive"
+            return True, "Valid quantity"
+        except ValueError:
+            return False, "Quantity must be a number"
+    
+    @staticmethod
+    def validate_price(price):
+        """Validate price input"""
+        try:
+            if price is None:
+                return True, "No price (market order)"
+            p = float(price)
+            if p <= 0:
+                return False, "Price must be positive"
+            return True, "Valid price"
+        except ValueError:
+            return False, "Price must be a number"
+    
+    @staticmethod
+    def validate_side(side):
+        """Validate order side"""
+        side_upper = side.upper()
+        if side_upper in ['BUY', 'SELL']:
+            return True, "Valid side"
+        return False, "Side must be BUY or SELL"
+
+class Formatter:
+    @staticmethod
+    def format_order_response(response):
+        """Format order response for display"""
+        if not response:
+            return "No response received"
+        
+        formatted = f"""
+{Fore.GREEN}Order Executed Successfully!
+{Style.RESET_ALL}Symbol: {response.get('symbol', 'N/A')}
+Order ID: {response.get('orderId', 'N/A')}
+Side: {response.get('side', 'N/A')}
+Type: {response.get('type', 'N/A')}
+Quantity: {response.get('origQty', 'N/A')}
+Price: {response.get('price', 'Market Price')}
+Status: {response.get('status', 'N/A')}
+Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+"""
+        return formatted
+    
+    @staticmethod
+    def format_error(error_msg):
+        """Format error message"""
+        return f"{Fore.RED}Error: {error_msg}{Style.RESET_ALL}"
