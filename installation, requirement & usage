@@ -1,0 +1,45 @@
+# Clone or create the project directory
+mkdir trading_bot && cd trading_bot
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Setup environment variables
+cp .env.example .env
+# Edit .env with your Binance Testnet credentials
+
+####usage command line//////
+
+# Start interactive CLI
+python cli.py
+
+# In the CLI, first login:
+login
+# Enter your API key and secret when prompted
+
+# Then place orders:
+market BTCUSDT BUY 0.001
+limit BTCUSDT SELL 0.001 52000
+stop_limit BTCUSDT SELL 0.001 49000 49500
+
+# Check account and orders:
+account
+orders
+
+#direct command
+
+# Market order
+python bot.py --api-key "your_key" --api-secret "your_secret" \
+  --symbol BTCUSDT --side BUY --quantity 0.001 --order-type MARKET
+
+# Limit order
+python bot.py --api-key "your_key" --api-secret "your_secret" \
+  --symbol BTCUSDT --side SELL --quantity 0.001 --price 52000 --order-type LIMIT
+
+# Stop-limit order
+python bot.py --api-key "your_key" --api-secret "your_secret" \
+  --symbol BTCUSDT --side SELL --quantity 0.001 --price 49000 --stop-price 49500 --order-type STOP_LIMIT
