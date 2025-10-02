@@ -1,0 +1,29 @@
+Core Requirements:
+
+Binance Futures Testnet integration
+Market and Limit orders
+Buy/Sell support
+Command-line interface
+Comprehensive logging
+Error handling
+
+Bonus Features:
+
+Stop-Limit order type
+Enhanced CLI interface
+Account information display
+Open orders management
+Order cancellation
+Colored output
+Input validation
+
+Advanced Features:
+
+Symbol setup with leverage
+Margin type configuration
+Real-time order status
+Comprehensive error handling
+Logging to file and console
+
+The bot is production-ready with proper error handling, logging, and user-friendly interfaces for both automated and interactive use.
+
